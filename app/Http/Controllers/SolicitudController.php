@@ -16,8 +16,8 @@ class SolicitudController extends Controller
         //
 
         
-        $solicitudes = DB::table('solicituds')->get(); // obtenemos todos los proyectos en la base de datos
-        return view('TallerVista/index', ['solicituds' => $solicitudes]); // pasamos los proyectos a la vista
+        $solicitudes = DB::table('Solicitud')->get(); // obtenemos todos los proyectos en la base de datos
+        return view('TallerVista/index', ['Solicitud' => $solicitudes]); // pasamos los proyectos a la vista
         // view('ejemploProyecto.index', ahi se pone el nombre de la carpeta en vista);
     }
 
@@ -51,17 +51,17 @@ class SolicitudController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Solicitud $solicitud)
+    public function edit($id)
     {
         //
         $solicitud = Solicitud::find($id); // buscamos la solicitud por su id
-        return view('TallerVista/edit', compact ('solicitud')); // pasamos la solicitud a la vista de edición
+        return view('TallerVista/update', compact ('solicitud')); // pasamos la solicitud a la vista de edición
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Solicitud $solicitud)
+    public function update(Request $request, $id)
     {
         //
         $request->validate([
@@ -75,7 +75,7 @@ class SolicitudController extends Controller
         ]);
         $solicitud = Solicitud::find($id); // buscamos la solicitud por su id
         $solicitud->update($request->all());
-        return redirect(route('taller.index'))
+        return redirect('taller/')
             ->with('success', 'Solicitud actualizada correctamente'); // redirige a la vista index con un mensaje de éxito 
         // actualiza la solicitud con los datos del formulario
     }
@@ -83,8 +83,17 @@ class SolicitudController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Solicitud $solicitud)
-    {
-        //
+    public function destroy($id)
+{
+    $solicitud = Solicitud::find($id); // Buscar la solicitud por su ID
+
+    if (!$solicitud) {
+        return redirect()->route('taller.index')->with('error', 'Solicitud no encontrada.');
     }
+
+    $solicitud->delete(); // Eliminar la solicitud
+
+    return redirect()->route('taller.index')->with('success', 'Solicitud eliminada correctamente.');
+}
+
 }
